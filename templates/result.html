@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Результат анализа — LinuxMigrator{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <a href="{{ url_for('analyzer') }}" class="back-link">← Новый анализ</a>
+    <div class="section-label">$ cat migration_report.txt</div>
+    <h1 class="page-title">Твой план миграции</h1>
+    <p class="page-sub">Анализ {{ selected_software|length }} программ завершён</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="result-layout">
+    <div class="result-main">
+
+      <!-- СЛОЖНОСТЬ МИГРАЦИИ -->
+      <div class="card difficulty-card diff-card-{{ difficulty_color }}">
+        <h2 class="card-title">📊 Оценка сложности перехода</h2>
+        <div class="difficulty-display">
+          <div class="diff-circle diff-circle-{{ difficulty_color }}">
+            <span class="diff-num">{{ avg_difficulty }}</span>
+            <span class="diff-max">/3</span>
+          </div>
+          <div class="diff-info">
+            <div class="diff-label-big">{{ difficulty_label }} миграция</div>
+            <p class="diff-desc">
+              {% if difficulty_color == 'easy' %}Отличные новости! Большинство твоих программ имеют прямые аналоги. Переход будет комфортным.
+              {% elif difficulty_color == 'medium' %}Переход потребует некоторой адаптации. Часть программ придётся заменить аналогами.
+              {% else %}Переход будет сложным. Некоторые программы не имеют полноценных аналогов на Linux. Но это решаемо!{% endif %}
+            </p>
+          </div>
+        </div>
+        <div class="diff-bar-wrap">
+          <div class="diff-bar diff-bar-{{ difficulty_color }}" data-width="{{ ((avg_difficulty / 3) * 100)|int }}"></div>
+        </div>
+      </div>
+
+      <!-- ПЛАН МИГРАЦИИ -->
+      <div class="card">
+        <h2 class="card-title">🗺️ Пошаговый план перехода</h2>
+        <div class="steps-timeline">
+          {% for step in steps %}
+          <div class="timeline-step">
+            <div class="timeline-num">{{ step.num }}</div>
+            <div class="timeline-content">
+              <div class="timeline-icon">{{ step.icon }}</div>
+              <div class="timeline-text">
+                <h3>{{ step.title }}</h3>
+                <p>{{ step.desc }}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- АНАЛОГИ ПРОГРАММ -->
+      <div class="card">
+        <h2 class="card-title">🔄 Аналоги твоих программ</h2>
+        {% for sw in selected_software %}
+        <div class="alt-section">
+          <div class="alt-header">
+            <span class="sw-icon-lg">{{ sw.icon }}</span>
+            <div>
+              <span class="alt-sw-name">{{ sw.name }}</span>
+              <span class="sw-cat-badge">{{ sw.category }}</span>
+            </div>
+            <span class="sw-diff-label diff-{{ sw.migration_difficulty }}">
+              {% if sw.migration_difficulty == 1 %}✓ Легко{% elif sw.migration_difficulty == 2 %}⚡ Средне{% else %}⚠️ Сложно{% endif %}
+            </span>
+          </div>
+          {% if alternatives[sw.id] %}
+          <div class="alts-list">
+            {% for alt in alternatives[sw.id] %}
+            <div class="alt-item">
+              <div class="alt-info">
+                <span class="alt-name">{{ alt.name }}</span>
+                <span class="alt-desc">{{ alt.description }}</span>
+              </div>
+              <div class="alt-meta">
+                <div class="similarity-bar-wrap">
+                  <div class="similarity-bar" data-width="{{ alt.similarity }}"></div>
+                </div>
+                <span class="similarity-num">{{ alt.similarity }}%</span>
+                {% if alt.is_free %}<span class="free-badge">Бесплатно</span>{% endif %}
+                {% if alt.website %}<a href="{{ alt.website }}" target="_blank" class="alt-link">Сайт →</a>{% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="no-alts">Прямых аналогов нет. Рассмотри Wine или виртуальную машину.</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- САЙДБАР: РЕКОМЕНДОВАННЫЕ ДИСТРИБУТИВЫ -->
+    <aside class="result-aside">
+      <div class="card">
+        <h2 class="card-title">🐧 Рекомендуем</h2>
+        {% for d in recommended %}
+        <div class="rec-distro {% if loop.first %}rec-best{% endif %}">
+          {% if loop.first %}<div class="rec-badge">⭐ Лучший выбор</div>{% endif %}
+          <div class="rec-header">
+            <div class="distro-icon-sm">{{ d.name[0] }}</div>
+            <div>
+              <span class="rec-name">{{ d.name }}</span>
+              <span class="rec-desktop">{{ d.desktop }}</span>
+            </div>
+            <span class="rec-rating">{{ d.rating }}</span>
+          </div>
+          <p class="rec-why">{{ d.why_good }}</p>
+          <div class="rec-tags">
+            <span class="tag diff-{{ d.difficulty|lower }}">{{ d.difficulty }}</span>
+            <span class="tag">{{ d.min_ram }}+ ГБ RAM</span>
+          </div>
+          {% if d.website %}
+          <a href="{{ d.website }}" target="_blank" class="btn btn-outline btn-sm btn-block" style="margin-top:0.75rem">Официальный сайт →</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">📈 Статистика</h2>
+        <ul class="stat-list">
+          <li><span>Программ проанализировано</span><strong>{{ selected_software|length }}</strong></li>
+          <li><span>Опыт</span><strong>
+            {% if experience == 'beginner' %}Новичок
+            {% elif experience == 'intermediate' %}Средний
+            {% else %}Продвинутый{% endif %}
+          </strong></li>
+          <li><span>Цель</span><strong>
+            {% if purpose == 'desktop' %}Повседневная работа
+            {% elif purpose == 'dev' %}Разработка
+            {% elif purpose == 'gaming' %}Игры
+            {% else %}Сервер{% endif %}
+          </strong></li>
+          <li><span>RAM</span><strong>{{ ram }} ГБ</strong></li>
+        </ul>
+        <a href="{{ url_for('analyzer') }}" class="btn btn-outline btn-block" style="margin-top:1rem">Новый анализ</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% endblock %}

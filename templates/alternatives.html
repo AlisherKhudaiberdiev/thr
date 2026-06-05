@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Аналоги программ — LinuxMigrator{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="section-label">$ ls /usr/share/alternatives/</div>
+    <h1 class="page-title">База аналогов</h1>
+    <p class="page-sub">Linux-замены для {{ software|length }} Windows-программ</p>
+  </div>
+</section>
+<section class="section">
+  <form class="filters" method="GET">
+    <div class="filter-search">
+      <span>🔍</span>
+      <input type="text" name="search" value="{{ search }}" placeholder="Найти программу..." class="filter-input">
+    </div>
+    <div class="filter-cats">
+      <a href="{{ url_for('alternatives') }}" class="filter-btn {% if not selected_category %}active{% endif %}">Все</a>
+      {% for cat in categories %}
+      <a href="{{ url_for('alternatives', category=cat, search=search) }}" class="filter-btn {% if selected_category == cat %}active{% endif %}">{{ cat }}</a>
+      {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary">Найти</button>
+  </form>
+
+  {% if software %}
+  <div class="alts-full-list">
+    {% for sw in software %}
+    <div class="alt-section card">
+      <div class="alt-header">
+        <span class="sw-icon-lg">{{ sw.icon }}</span>
+        <div>
+          <span class="alt-sw-name">{{ sw.name }}</span>
+          <span class="sw-cat-badge">{{ sw.category }}</span>
+          {% if sw.windows_only %}<span class="win-only-badge">Windows only</span>{% endif %}
+        </div>
+        <span class="sw-diff-label diff-{{ sw.migration_difficulty }}">
+          {% if sw.migration_difficulty == 1 %}✓ Легко{% elif sw.migration_difficulty == 2 %}⚡ Средне{% else %}⚠️ Сложно{% endif %}
+        </span>
+      </div>
+      {% if sw.alternatives %}
+      <div class="alts-list">
+        {% for alt in sw.alternatives|sort(attribute='rating', reverse=True) %}
+        <div class="alt-item">
+          <div class="alt-info">
+            <span class="alt-name">{{ alt.name }}</span>
+            <span class="alt-desc">{{ alt.description }}</span>
+          </div>
+          <div class="alt-meta">
+            <div class="similarity-bar-wrap">
+              <div class="similarity-bar" data-width="{{ alt.similarity }}"></div>
+            </div>
+            <span class="similarity-num">{{ alt.similarity }}%</span>
+            {% if alt.is_free %}<span class="free-badge">Бесплатно</span>{% endif %}
+            {% if alt.website %}<a href="{{ alt.website }}" target="_blank" class="alt-link">Сайт →</a>{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="no-alts">Прямых аналогов нет. Попробуй Wine или виртуальную машину.</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">🔎</div><p>Ничего не найдено</p></div>
+  {% endif %}
+</section>
+{% endblock %}

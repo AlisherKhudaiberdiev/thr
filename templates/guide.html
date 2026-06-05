@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Гайд — LinuxMigrator{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="section-label">$ cat getting_started.md</div>
+    <h1 class="page-title">Гайд по переходу</h1>
+    <p class="page-sub">Полное руководство от Windows к Linux</p>
+  </div>
+</section>
+<section class="section">
+  <div class="guide-layout">
+    <div class="guide-main">
+      {% for step in [
+        {'n':'01','icon':'💾','t':'Создай резервную копию','d':'Скопируй все важные файлы на внешний диск или в облако. Документы, фото, видео, закладки браузера, пароли. Это самый важный шаг — не пропускай его.'},
+        {'n':'02','icon':'🐧','t':'Выбери дистрибутив','d':'Если ты новичок — возьми Linux Mint или Zorin OS. Они максимально похожи на Windows. Если любишь игры — Pop!_OS. Для разработки — Fedora или Manjaro.'},
+        {'n':'03','icon':'⬇️','t':'Скачай ISO-образ','d':'Перейди на официальный сайт дистрибутива и скачай ISO-файл. Это образ системы размером 2-4 ГБ.'},
+        {'n':'04','icon':'💿','t':'Создай загрузочную флешку','d':'Скачай программу Rufus (Windows) или Balena Etcher. Вставь флешку минимум 8 ГБ, выбери ISO-файл и нажми "Записать".'},
+        {'n':'05','icon':'🖥️','t':'Попробуй в режиме Live','d':'Перезагрузи компьютер и загрузись с флешки (обычно F12 при включении). Выбери "Try Linux without installing". Попробуй систему без риска для Windows.'},
+        {'n':'06','icon':'⚙️','t':'Установи систему','d':'Когда будешь готов — запусти установщик с рабочего стола Live-системы. Рекомендуем оставить Windows на отдельном разделе — это называется dual boot.'},
+        {'n':'07','icon':'📦','t':'Установи аналоги программ','d':'Используй наш Анализатор чтобы найти аналоги всех нужных программ. Большинство устанавливается через менеджер пакетов одной командой.'},
+        {'n':'08','icon':'📚','t':'Выучи 10 команд терминала','d':'ls (список файлов), cd (сменить папку), sudo apt install (установить программу), cp (копировать), mv (переместить), rm (удалить), cat (читать файл), grep (поиск), pwd (текущая папка), man (справка).'},
+      ] %}
+      <div class="guide-step card">
+        <div class="guide-step-num">{{ step.n }}</div>
+        <div class="guide-step-icon">{{ step.icon }}</div>
+        <h2 class="guide-step-title">{{ step.t }}</h2>
+        <p>{{ step.d }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <aside class="guide-aside">
+      <div class="card">
+        <h3 class="card-title">Быстрые ссылки</h3>
+        <ul class="aside-links">
+          <li><a href="{{ url_for('analyzer') }}">→ Анализатор программ</a></li>
+          <li><a href="{{ url_for('distros') }}">→ Выбрать дистрибутив</a></li>
+          <li><a href="{{ url_for('alternatives') }}">→ База аналогов</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="card-title">Сложность перехода</h3>
+        <div style="display:flex;flex-direction:column;gap:0.6rem">
+          <div><span class="tag diff-1">Легко</span><span style="color:var(--text2);font-size:12px;margin-left:8px">Браузеры, мессенджеры, медиа</span></div>
+          <div><span class="tag diff-2">Средне</span><span style="color:var(--text2);font-size:12px;margin-left:8px">Office, разработка, архивы</span></div>
+          <div><span class="tag diff-3">Сложно</span><span style="color:var(--text2);font-size:12px;margin-left:8px">Adobe, специфический софт</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Анализатор — LinuxMigrator{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="section-label">$ ./analyze_windows_software.sh</div>
+    <h1 class="page-title">Анализатор программ</h1>
+    <p class="page-sub">Отметь программы которыми пользуешься на Windows</p>
+  </div>
+</section>
+
+<section class="section">
+  <form method="POST" action="{{ url_for('analyze') }}" id="analyzerForm">
+
+    <!-- ПАРАМЕТРЫ -->
+    <div class="card params-card">
+      <h2 class="card-title">⚙️ Твои параметры</h2>
+      <div class="params-grid">
+        <div class="form-row">
+          <label class="form-label">Опыт работы с Linux</label>
+          <select name="experience" class="form-select">
+            <option value="beginner">🌱 Новичок — никогда не пробовал</option>
+            <option value="intermediate">⚙️ Средний — немного знаком</option>
+            <option value="advanced">🔥 Продвинутый — использую давно</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Цель использования</label>
+          <select name="purpose" class="form-select">
+            <option value="desktop">🖥️ Повседневная работа</option>
+            <option value="dev">💻 Разработка</option>
+            <option value="gaming">🎮 Игры</option>
+            <option value="server">🖧 Сервер</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Оперативная память (ГБ)</label>
+          <select name="ram" class="form-select">
+            <option value="2">2 ГБ</option>
+            <option value="4">4 ГБ</option>
+            <option value="8" selected>8 ГБ</option>
+            <option value="16">16 ГБ</option>
+            <option value="32">32 ГБ и больше</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Возраст компьютера</label>
+          <select name="cpu" class="form-select">
+            <option value="modern">Современный (2018+)</option>
+            <option value="mid">Средний (2012-2018)</option>
+            <option value="old">Старый (до 2012)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ФИЛЬТР КАТЕГОРИЙ -->
+    <div class="cat-filter">
+      <button type="button" class="filter-btn active" data-cat="all">Все</button>
+      {% for cat in categories %}
+      <button type="button" class="filter-btn" data-cat="{{ cat }}">{{ cat }}</button>
+      {% endfor %}
+    </div>
+
+    <!-- СЧЁТЧИК ВЫБРАННЫХ -->
+    <div class="selected-counter">
+      Выбрано: <span id="selectedCount">0</span> программ
+    </div>
+
+    <!-- СПИСОК ПРОГРАММ -->
+    <div class="software-selector">
+      {% for sw in software_list %}
+      <label class="sw-select-card" data-cat="{{ sw.category }}">
+        <input type="checkbox" name="software_ids" value="{{ sw.id }}">
+        <div class="sw-select-inner">
+          <span class="sw-icon-lg">{{ sw.icon }}</span>
+          <div class="sw-select-info">
+            <span class="sw-name">{{ sw.name }}</span>
+            <span class="sw-cat-badge">{{ sw.category }}</span>
+          </div>
+          {% if sw.windows_only %}
+          <span class="win-only-badge">Windows only</span>
+          {% endif %}
+          <span class="sw-diff-dot diff-{{ sw.migration_difficulty }}"
+            title="{% if sw.migration_difficulty == 1 %}Легко перейти{% elif sw.migration_difficulty == 2 %}Средняя сложность{% else %}Сложный переход{% endif %}">
+          </span>
+        </div>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="analyzer-submit">
+      <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+        🔍 Анализировать (<span id="submitCount">0</span> программ)
+      </button>
+      <p class="submit-hint">Выбери хотя бы одну программу</p>
+    </div>
+
+  </form>
+</section>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const checkboxes = document.querySelectorAll('input[type=checkbox]');
+const counter    = document.getElementById('selectedCount');
+const submitCount = document.getElementById('submitCount');
+const submitBtn  = document.getElementById('submitBtn');
+
+function updateCount() {
+  const n = document.querySelectorAll('input[type=checkbox]:checked').length;
+  counter.textContent = n;
+  submitCount.textContent = n;
+  submitBtn.disabled = n === 0;
+}
+
+checkboxes.forEach(cb => cb.addEventListener('change', updateCount));
+
+// Фильтр категорий
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('.sw-select-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+});
+</script>
+{% endblock %}

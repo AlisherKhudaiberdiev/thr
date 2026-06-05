@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LinuxMigrator{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="scanlines"></div>
+<nav class="navbar">
+  <a href="{{ url_for('index') }}" class="nav-logo">
+    <span class="logo-bracket">[</span>Linux<span class="logo-accent">Migrator</span><span class="logo-bracket">]</span>
+  </a>
+  <button class="nav-toggle" id="navToggle">☰</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="{{ url_for('analyzer') }}"    class="nav-link {% if request.endpoint == 'analyzer' %}active{% endif %}">🔍 Анализатор</a></li>
+    <li><a href="{{ url_for('alternatives') }}" class="nav-link {% if request.endpoint == 'alternatives' %}active{% endif %}">🔄 Аналоги</a></li>
+    <li><a href="{{ url_for('distros') }}"      class="nav-link {% if request.endpoint == 'distros' %}active{% endif %}">🐧 Дистрибутивы</a></li>
+    <li><a href="{{ url_for('guide') }}"        class="nav-link {% if request.endpoint == 'guide' %}active{% endif %}">📖 Гайд</a></li>
+  </ul>
+</nav>
+<main class="main-content">{% block content %}{% endblock %}</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo"><span class="logo-bracket">[</span>Linux<span class="logo-accent">Migrator</span><span class="logo-bracket">]</span></div>
+    <p class="footer-desc">Помощник перехода с Windows на Linux. Найди свой дистрибутив и аналоги программ.</p>
+    <div class="footer-links">
+      <a href="{{ url_for('analyzer') }}">Анализатор</a>
+      <a href="{{ url_for('alternatives') }}">Аналоги</a>
+      <a href="{{ url_for('distros') }}">Дистрибутивы</a>
+      <a href="{{ url_for('guide') }}">Гайд</a>
+      <a href="{{ url_for('admin_login') }}">Админ</a>
+    </div>
+  </div>
+</footer>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

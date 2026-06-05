@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Админ панель — LinuxMigrator{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div><div class="section-label">$ sudo su</div><h1 class="page-title">Панель администратора</h1></div>
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-outline">Выйти</a>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="admin-layout">
+    <div class="card">
+      <h2 class="card-title">➕ Добавить программу</h2>
+      <form method="POST" action="{{ url_for('admin_add_software') }}" class="review-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+          <div class="form-row"><label class="form-label">Название *</label><input name="name" class="form-input" required></div>
+          <div class="form-row"><label class="form-label">Иконка</label><input name="icon" class="form-input" placeholder="💻"></div>
+          <div class="form-row"><label class="form-label">Категория</label>
+            <select name="category" class="form-select"><option>Office</option><option>Browser</option><option>Media</option><option>Design</option><option>Dev</option><option>Gaming</option><option>Security</option><option>System</option></select>
+          </div>
+          <div class="form-row"><label class="form-label">Сложность перехода</label>
+            <select name="migration_difficulty" class="form-select"><option value="1">1 — Легко</option><option value="2" selected>2 — Средне</option><option value="3">3 — Сложно</option></select>
+          </div>
+        </div>
+        <div class="form-row"><label class="form-label">Описание</label><input name="description" class="form-input" placeholder="Краткое описание программы"></div>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2 class="card-title">📋 Программы ({{ software|length }})</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Программа</th><th>Категория</th><th>Сложность</th><th>Поиски</th><th></th></tr></thead>
+          <tbody>
+            {% for s in software %}
+            <tr>
+              <td>{{ s.icon }} {{ s.name }}</td>
+              <td>{{ s.category }}</td>
+              <td>{{ s.migration_difficulty }}</td>
+              <td>{{ s.search_count or 0 }}</td>
+              <td><form method="POST" action="{{ url_for('admin_delete_software', sw_id=s.id) }}" onsubmit="return confirm('Удалить?')">
+                <button class="btn btn-sm" style="background:rgba(248,113,113,0.15);color:#f87171;border-color:rgba(248,113,113,0.3)">×</button>
+              </form></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="card-title">📊 Последние анализы ({{ results|length }})</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Дата</th><th>Программ</th><th>Рекомендация</th><th>Сложность</th></tr></thead>
+          <tbody>
+            {% for r in results %}
+            <tr>
+              <td>{{ r.created_at.strftime('%d.%m %H:%M') }}</td>
+              <td>{{ r.software_count }}</td>
+              <td>{{ r.recommended_distro }}</td>
+              <td>{{ r.difficulty }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

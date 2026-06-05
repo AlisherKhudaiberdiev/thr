@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}LinuxMigrator — Переход с Windows на Linux{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> Бесплатный помощник миграции</div>
+    <h1 class="hero-title">Переходи с <span class="hero-accent-red">Windows</span><br>на <span class="hero-accent">Linux</span><br>без страха</h1>
+    <p class="hero-sub">Укажи программы которыми пользуешься — мы подберём Linux-аналоги, рекомендуем дистрибутив и составим план перехода.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('analyzer') }}" class="btn btn-primary btn-lg">🔍 Начать анализ</a>
+      <a href="{{ url_for('guide') }}"    class="btn btn-outline">📖 Читать гайд</a>
+    </div>
+  </div>
+  <div class="hero-terminal">
+    <div class="terminal-bar">
+      <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+      <span class="t-title">migrator ~ bash</span>
+    </div>
+    <div class="terminal-body">
+      <p><span class="t-user">user@linux</span><span class="t-sym">:~$</span> ./analyze.sh</p>
+      <p class="t-out">Сканирую Windows-программы...</p>
+      <p class="t-out">Найдено аналогов: <span class="t-hl">{{ total_software }}</span></p>
+      <p class="t-out">Дистрибутивов: <span class="t-hl">{{ total_distros }}</span></p>
+      <p class="t-out">Анализов выполнено: <span class="t-hl">{{ total_analyses }}</span></p>
+      <p class="t-out" style="color:var(--accent)">✓ Готов к работе!</p>
+      <p><span class="t-user">user@linux</span><span class="t-sym">:~$</span> <span class="t-cursor">▋</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- КАК ЭТО РАБОТАЕТ -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-label">$ cat how_it_works.txt</div>
+    <h2 class="section-title">Как это работает</h2>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-icon">📋</div>
+      <h3>Выбери программы</h3>
+      <p>Отметь все программы которыми пользуешься на Windows — Office, Photoshop, игры, браузеры и другие.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-icon">🔄</div>
+      <h3>Получи аналоги</h3>
+      <p>Система покажет Linux-аналоги каждой программы с оценкой схожести и ссылками для скачивания.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-icon">🐧</div>
+      <h3>Узнай свой дистрибутив</h3>
+      <p>На основе твоего опыта и программ система рекомендует три подходящих дистрибутива Linux.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <div class="step-icon">🗺️</div>
+      <h3>Получи план перехода</h3>
+      <p>Пошаговый персональный план: от резервной копии до установки системы и первых настроек.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ПОПУЛЯРНЫЕ ПРОГРАММЫ -->
+<section class="section section-dark">
+  <div class="section-header">
+    <div class="section-label">$ top --sort=popular</div>
+    <h2 class="section-title">Популярные программы</h2>
+    <a href="{{ url_for('alternatives') }}" class="section-link">Все аналоги →</a>
+  </div>
+  <div class="software-grid">
+    {% for sw in popular %}
+    <a href="{{ url_for('alternatives') }}?search={{ sw.name }}" class="software-card">
+      <span class="sw-icon">{{ sw.icon }}</span>
+      <div class="sw-info">
+        <span class="sw-name">{{ sw.name }}</span>
+        <span class="sw-cat">{{ sw.category }}</span>
+      </div>
+      <span class="sw-diff diff-{{ sw.migration_difficulty }}">
+        {% if sw.migration_difficulty == 1 %}Легко{% elif sw.migration_difficulty == 2 %}Средне{% else %}Сложно{% endif %}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section">
+  <div class="cta-inner">
+    <div class="cta-text">
+      <h2>Готов к переходу?</h2>
+      <p>Анализ занимает 2 минуты. Ты узнаешь что потеряешь, что найдёшь и как это сделать правильно.</p>
+    </div>
+    <a href="{{ url_for('analyzer') }}" class="btn btn-primary btn-lg">Начать анализ →</a>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Вход — Админ{% endblock %}
+{% block content %}
+<section class="section" style="min-height:80vh;display:flex;align-items:center;justify-content:center">
+  <div class="card" style="width:100%;max-width:380px">
+    <h2 class="card-title">🔐 Вход в панель</h2>
+    {% if error %}<div class="alert-error">{{ error }}</div>{% endif %}
+    <form method="POST" class="review-form">
+      <div class="form-row">
+        <label class="form-label">Пароль</label>
+        <input type="password" name="password" class="form-input" placeholder="Введите пароль" autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Войти</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

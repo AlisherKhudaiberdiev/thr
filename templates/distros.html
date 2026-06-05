@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Дистрибутивы — LinuxMigrator{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="section-label">$ ls /distros/</div>
+    <h1 class="page-title">Дистрибутивы Linux</h1>
+    <p class="page-sub">Выбери подходящий под твои задачи</p>
+  </div>
+</section>
+<section class="section">
+  <div class="distro-grid">
+    {% for d in distros %}
+    <div class="distro-card">
+      <div class="distro-card-top">
+        <div class="distro-icon">{{ d.name[0] }}</div>
+        <div class="distro-meta">
+          <h3 class="distro-name">{{ d.name }}</h3>
+          <span class="distro-based">{{ d.based_on }}</span>
+        </div>
+        <div class="distro-rating-badge">{{ d.rating }}</div>
+      </div>
+      <p class="distro-desc">{{ d.description }}</p>
+      <div class="rec-why-box">💡 {{ d.why_good }}</div>
+      <div class="distro-tags">
+        <span class="tag diff-{{ d.difficulty|lower }}">{{ d.difficulty }}</span>
+        <span class="tag">{{ d.desktop }}</span>
+        <span class="tag">{{ d.min_ram }}+ ГБ RAM</span>
+        <span class="tag">{{ d.category }}</span>
+      </div>
+      {% if d.website %}
+      <a href="{{ d.website }}" target="_blank" class="btn btn-outline btn-block" style="margin-top:1rem">Официальный сайт →</a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
